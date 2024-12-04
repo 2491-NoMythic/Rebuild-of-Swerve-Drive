@@ -1,7 +1,6 @@
 package frc.robot.Settings;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -35,17 +34,25 @@ public final class Constants {
     public static final class ModuleConstants{
         public static final double DEGREES_TO_ROTATIONS = 2491;
         public static final double DRIVETRAIN_ROTATIONS_TO_METERS = (HardwareConstants.DRIVETRAIN_WHEEL_DIAMETER * Math.PI);
+        public static final double MAX_VELOCITY_EMPIRCAL_RPS = 2491;
+    }
+    public static final class DrivetrainConstants{
+        
     }
     public static final class CTREConfigs {
         public TalonFXConfiguration driveMotorConfig;
         public TalonFXConfiguration steerMotorConfig;
         public CANcoderConfiguration steerEncoderConfig;
-        public Pigeon2Configuration pigeon2Config;
-
         public CTREConfigs() {
-          driveMotorConfig = new TalonFXConfiguration();
-          steerMotorConfig = new TalonFXConfiguration();
-          steerEncoderConfig = new CANcoderConfiguration();
+            driveMotorConfig = new TalonFXConfiguration();
+            steerMotorConfig = new TalonFXConfiguration();
+            steerEncoderConfig = new CANcoderConfiguration();
+
+            //Drive motor
+            driveMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+            driveMotorConfig.CurrentLimits.StatorCurrentLimitEnable = false;
+            driveMotorConfig.CurrentLimits.SupplyCurrentThreshold = 50;
+            driveMotorConfig.CurrentLimits.SupplyTimeThreshold = 0.8;
         } 
     }
 }
