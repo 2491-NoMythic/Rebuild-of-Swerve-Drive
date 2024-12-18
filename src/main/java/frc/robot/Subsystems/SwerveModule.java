@@ -3,6 +3,7 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.*;
 import frc.robot.Settings.Constants.ModuleConstants;
+import frc.robot.Settings.Constants.CTREConfigs;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -25,26 +26,24 @@ public class SwerveModule {
     private PositionDutyCycle smControl = new PositionDutyCycle(0);
     private NeutralOut stopped = new NeutralOut();
   /**
-   * Constructs a SwerveModule with a drive motor, steering motor, steering encoder, and configurations for all of the above.
+   * Constructs a SwerveModule with a drive motor, steering motor, and steering encoder.
    * Also takes a rotation 2d offset for directions and a canivore name. 
    *
    * @param driveID (drive motor id, integer)
    * @param steerID (steer motor id, integer)
    * @param encID (steer encoder id, integer)
-   * @param dmConfig (TalonFX configuration of the drive motor)
-   * @param smConfig (TalonFX configuration of the steer motor)
-   * @param seConfig (CANcoder configuration of the steer encoder)
    * @param Offler (offset, rotation2d. Also the Discworld's god of crocodiles.)
    * @parama canivoreName (name of the canivore)
    */
-  public SwerveModule(String moduleName, int driveID, int steerID, int encID, TalonFXConfiguration dmConfig, 
-                      TalonFXConfiguration smConfig, CANcoderConfiguration seConfig, Rotation2d Offler, String canivoreName){
+  public SwerveModule(String moduleName, int driveID, int steerID, int encID, Rotation2d Offler, String canivoreName){
+    //TalonFXConfiguration dmConfig, 
+     //TalonFXConfiguration smConfig, CANcoderConfiguration seConfig,
     drive_Motor = new TalonFX(driveID, canivoreName);
     steer_Motor = new TalonFX(steerID, canivoreName);
     steer_Encoder = new CANcoder(encID, canivoreName);
-    drive_Configuration = dmConfig;
-    steer_Configuration = smConfig;
-    enc_Configuration = seConfig;
+    drive_Configuration = CTREConfigs.driveMotorConfig;
+    steer_Configuration = CTREConfigs.steerMotorConfig;
+    enc_Configuration = CTREConfigs.steerEncoderConfig;
     steer_Offset = Offler;
 
     enc_Configuration.MagnetSensor.MagnetOffset = -steer_Offset.getRotations();
@@ -83,7 +82,7 @@ public class SwerveModule {
     return (drive_Motor.getVelocity().getValue() * ModuleConstants.DRIVETRAIN_ROTATIONS_TO_METERS);
   }
   /**finds the curernt encoder position, it removes the current offset so we just get the raw position
-   * @return
+   * @return The current encoder position.
    */
     public double findOffset() {
       return MathUtil.inputModulus(
@@ -107,7 +106,7 @@ public class SwerveModule {
     return new SwerveModulePosition(
         getDriveDistanceMeters(), getRotation());
   }
-  //This is the get new section. It recives instructions. 
+  //This is the direction section. It recives instructions and sets the desired state of the swerve module. 
   /**
    * Returns the target angle of the wheel.
    * @return The target angle of the wheel in degrees.
@@ -122,7 +121,6 @@ public class SwerveModule {
   public double getTargetSpeedMetersPerSecond() {
     return desSpeed;
   }
-  //This is the state section. It controls the actual swerve drive states. 
   public void setDesiredState(SwerveModuleState desState){
     if (desState.angle == null){
       DriverStation.reportWarning("Error: module angle should be a number, not null.", true);
